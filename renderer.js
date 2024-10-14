@@ -4,6 +4,7 @@ const path = require('path');
 const searchBar = document.getElementById('search-bar');
 const characterGrid = document.getElementById('character-grid');
 const tooltip = document.getElementById('tooltip');
+const charLimit = 256;
 
 function loadUnicodeData() {
 	const filePath = path.join(__dirname, 'data', 'UnicodeData.txt');
@@ -37,16 +38,23 @@ function displayCharacters(characters) {
 		const charDiv = document.createElement('div');
 		charDiv.classList.add('character');
 		charDiv.textContent = character.char;
-		charDiv.addEventListener('mouseenter', () => showTooltip(character));
+		charDiv.addEventListener('mouseenter', (event) => showTooltip(event,character));
 		charDiv.addEventListener('mouseleave', hideTooltip);
 		charDiv.addEventListener('click', () => copyToClipboard(character.char));
 		characterGrid.appendChild(charDiv);
 	});
 }
 
-function showTooltip(character) {
+function showTooltip(event, character) {
 	tooltip.textContent = `${character.name} (${character.code})`;
 	tooltip.style.visibility = 'visible';
+
+	// Position the tooltip near the mouse cursor
+	const tooltipX = event.pageX + 10;  // Offset by 10 pixels
+	const tooltipY = event.pageY + 10;
+
+	tooltip.style.left = `${tooltipX}px`;
+	tooltip.style.top = `${tooltipY}px`;
 }
 
 function hideTooltip() {
@@ -60,12 +68,18 @@ function copyToClipboard(char) {
 }
 
 const unicodeData = loadUnicodeData();
-displayCharacters(unicodeData);
+displayCharacters(unicodeData.slice(0, charLimit));
 
 searchBar.addEventListener('input', () => {
 	const query = searchBar.value.toLowerCase();
-	const filteredCharacters = unicodeData.filter(character =>
-		character.name.toLowerCase().includes(query)
-	);
+	const filteredCharacters = [];
+	for (const character of unicodeData) {
+		if (character.name.toLowerCase().includes(query)) {
+			filteredCharacters.push(character);
+			if (filteredCharacters.length === charLimit) {
+				break; // Only filter the first @charLimit characters
+			}
+		}
+	}
 	displayCharacters(filteredCharacters);
 });

@@ -43,14 +43,3 @@
 .hidden {
 	visibility: hidden;
 }
-
-#loading-indicator {
-	text-align: center;
-	margin: 20px 0;
-	font-size: 18px;
-	color: #777;
-}
-
-.hidden {
-	display: none;
-}
