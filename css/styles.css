@@ -1,0 +1,56 @@
+#app {
+	padding: 20px;
+	font-family: Arial, sans-serif;
+}
+
+#search-bar {
+	width: 100%;
+	padding: 10px;
+	font-size: 16px;
+	margin-bottom: 20px;
+}
+
+#character-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+	gap: 10px;
+}
+
+.character {
+	font-size: 24px;
+	cursor: pointer;
+	text-align: center;
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.character:hover {
+	background-color: #f0f0f0;
+}
+
+#tooltip {
+	position: absolute;
+	padding: 10px;
+	background-color: #222;
+	color: white;
+	border-radius: 4px;
+	font-size: 12px;
+	z-index: 1000;
+	visibility: hidden;
+}
+
+.hidden {
+	visibility: hidden;
+}
+
+#loading-indicator {
+	text-align: center;
+	margin: 20px 0;
+	font-size: 18px;
+	color: #777;
+}
+
+.hidden {
+	display: none;
+}
