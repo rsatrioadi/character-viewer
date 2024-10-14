@@ -74,20 +74,34 @@ displayCharacters(unicodeData.slice(0, charLimit));
 
 searchBar.addEventListener('input', () => {
 	const query = searchBar.value.toLowerCase();
-	const filteredCharacters = [];
+	const filteredCharactersFull = []; // List for full matches
+	const filteredCharactersPartial = []; // List for partial matches
+
+	const queryWords = query.split(/\s+/); // Split query into individual words
 
 	for (const character of unicodeData) {
-		// Check if the query matches the name or any of the alternate names
-		if (
-			character.name.toLowerCase().includes(query) ||
-			character.alternateNames.some(name => name.toLowerCase().includes(query))
-		) {
-			filteredCharacters.push(character);
-			if (filteredCharacters.length === charLimit) {
-				break; // Only filter the first @charLimit characters
+		const nameLower = character.name.toLowerCase();
+		const alternateNamesLower = character.alternateNames.map(name => name.toLowerCase());
+
+		// Check for exact matches
+		if (nameLower.includes(query) || alternateNamesLower.includes(query)) {
+			filteredCharactersFull.push(character);
+		} else {
+			// Check for partial matches (if all words in the query exist in the name or alternate names)
+			const matchesInName = queryWords.every(word => nameLower.includes(word));
+			const matchesInAlternates = alternateNamesLower.some(name => queryWords.every(word => name.includes(word)));
+
+			if (matchesInName || matchesInAlternates) {
+				filteredCharactersPartial.push(character);
 			}
 		}
 	}
 
-	displayCharacters(filteredCharacters); // Update display with limited results
+	// Merge the two lists: full matches first, then partial matches
+	const filteredCharacters = [...filteredCharactersFull, ...filteredCharactersPartial];
+
+	// Limit to first 100 results
+	const limitedFilteredCharacters = filteredCharacters.slice(0, charLimit);
+
+	displayCharacters(limitedFilteredCharacters); // Update display with limited results
 });
