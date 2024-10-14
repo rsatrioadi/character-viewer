@@ -1,15 +1,15 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
+const fs = require('fs');
+const path = require('path');
 
 const searchBar = document.getElementById('search-bar');
 const characterGrid = document.getElementById('character-grid');
 const tooltip = document.getElementById('tooltip');
 
 function loadUnicodeData() {
-	const filePath = join(__dirname, 'data', 'UnicodeData.txt');
+	const filePath = path.join(__dirname, 'data', 'UnicodeData.txt');
 	const unicodeData = [];
 
-	const fileContent = readFileSync(filePath, 'utf-8');
+	const fileContent = fs.readFileSync(filePath, 'utf-8');
 	const lines = fileContent.split('\n');
 
 	lines.forEach(line => {
