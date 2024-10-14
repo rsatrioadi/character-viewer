@@ -1,23 +1,23 @@
 #app {
-	padding: 20px;
+	padding: 10px;
 	font-family: Arial, sans-serif;
 }
 
 #search-bar {
-	width: 100%;
+	width: auto;
 	padding: 10px;
-	font-size: 16px;
+	font-size: 12px;
 	margin-bottom: 20px;
 }
 
 #character-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-	gap: 10px;
+	gap: 5px;
 }
 
 .character {
-	font-size: 24px;
+	font-size: 16px;
 	cursor: pointer;
 	text-align: center;
 	padding: 10px;
@@ -31,7 +31,7 @@
 
 #tooltip {
 	position: absolute;
-	padding: 10px;
+	padding: 5px;
 	background-color: #222;
 	color: white;
 	border-radius: 4px;

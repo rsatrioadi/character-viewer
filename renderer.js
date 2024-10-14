@@ -4,7 +4,7 @@ const path = require('path');
 const searchBar = document.getElementById('search-bar');
 const characterGrid = document.getElementById('character-grid');
 const tooltip = document.getElementById('tooltip');
-const charLimit = 256;
+const charLimit = 1024;
 
 function loadUnicodeData() {
 	const filePath = path.join(__dirname, 'data', 'UnicodeData.txt');
@@ -20,11 +20,13 @@ function loadUnicodeData() {
 			const name = fields[1];
 			const codePoint = parseInt(codePointHex, 16);
 			const char = String.fromCodePoint(codePoint);
+			const alternateNames = fields.slice(3).filter(name => name !== '');
 
 			unicodeData.push({
 				char,
 				name,
-				code: `U+${codePointHex}`
+				code: `U+${codePointHex}`,
+				alternateNames
 			});
 		}
 	});
@@ -73,13 +75,19 @@ displayCharacters(unicodeData.slice(0, charLimit));
 searchBar.addEventListener('input', () => {
 	const query = searchBar.value.toLowerCase();
 	const filteredCharacters = [];
+
 	for (const character of unicodeData) {
-		if (character.name.toLowerCase().includes(query)) {
+		// Check if the query matches the name or any of the alternate names
+		if (
+			character.name.toLowerCase().includes(query) ||
+			character.alternateNames.some(name => name.toLowerCase().includes(query))
+		) {
 			filteredCharacters.push(character);
 			if (filteredCharacters.length === charLimit) {
 				break; // Only filter the first @charLimit characters
 			}
 		}
 	}
-	displayCharacters(filteredCharacters);
+
+	displayCharacters(filteredCharacters); // Update display with limited results
 });
