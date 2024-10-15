@@ -20,13 +20,15 @@ function loadUnicodeData() {
 			const name = fields[1];
 			const codePoint = parseInt(codePointHex, 16);
 			const char = String.fromCodePoint(codePoint);
-			const alternateNames = fields.slice(3).filter(name => name !== '');
+
+			// Join all name fields for easy searching
+			const allNames = [name, ...fields.slice(3).filter(Boolean)].join(" / ");
 
 			unicodeData.push({
 				char,
 				name,
 				code: `U+${codePointHex}`,
-				alternateNames
+				allNames
 			});
 		}
 	});
@@ -35,14 +37,16 @@ function loadUnicodeData() {
 }
 
 function displayCharacters(characters) {
-	characterGrid.innerHTML = '';
+	characterGrid.innerHTML = ''; // Clear previous results
 	characters.forEach(character => {
 		const charDiv = document.createElement('div');
 		charDiv.classList.add('character');
 		charDiv.textContent = character.char;
-		charDiv.addEventListener('mouseenter', (event) => showTooltip(event,character));
+
+		charDiv.addEventListener('mouseenter', (event) => showTooltip(event, character));
 		charDiv.addEventListener('mouseleave', hideTooltip);
 		charDiv.addEventListener('click', () => copyToClipboard(character.char));
+
 		characterGrid.appendChild(charDiv);
 	});
 }
@@ -51,12 +55,10 @@ function showTooltip(event, character) {
 	tooltip.textContent = `${character.name} (${character.code})`;
 	tooltip.style.visibility = 'visible';
 
-	// Position the tooltip near the mouse cursor
-	const tooltipX = event.pageX + 10;  // Offset by 10 pixels
-	const tooltipY = event.pageY + 10;
-
-	tooltip.style.left = `${tooltipX}px`;
-	tooltip.style.top = `${tooltipY}px`;
+	// Position the tooltip relative to the cursor
+	const offset = 10; // Offset value to prevent tooltip overlap with cursor
+	tooltip.style.left = `${event.pageX + offset}px`;
+	tooltip.style.top = `${event.pageY + offset}px`;
 }
 
 function hideTooltip() {
@@ -65,43 +67,63 @@ function hideTooltip() {
 
 function copyToClipboard(char) {
 	navigator.clipboard.writeText(char).then(() => {
-		// alert(`Copied: ${char}`);
+		// TODO: UI feedback?
 	});
 }
 
-const unicodeData = loadUnicodeData();
-displayCharacters(unicodeData.slice(0, charLimit));
+function containsSublist(mainList, subList) {
+	if (subList.length === 0) return true;
 
-searchBar.addEventListener('input', () => {
-	const query = searchBar.value.toLowerCase();
-	const filteredCharactersFull = []; // List for full matches
-	const filteredCharactersPartial = []; // List for partial matches
-
-	const queryWords = query.split(/\s+/); // Split query into individual words
-
-	for (const character of unicodeData) {
-		const nameLower = character.name.toLowerCase();
-		const alternateNamesLower = character.alternateNames.map(name => name.toLowerCase());
-
-		// Check for exact matches
-		if (nameLower.includes(query) || alternateNamesLower.includes(query)) {
-			filteredCharactersFull.push(character);
-		} else {
-			// Check for partial matches (if all words in the query exist in the name or alternate names)
-			const matchesInName = queryWords.every(word => nameLower.includes(word));
-			const matchesInAlternates = alternateNamesLower.some(name => queryWords.every(word => name.includes(word)));
-
-			if (matchesInName || matchesInAlternates) {
-				filteredCharactersPartial.push(character);
+	for (let i = 0; i <= mainList.length - subList.length; i++) {
+		let match = true;
+		for (let j = 0; j < subList.length; j++) {
+			if (mainList[i + j] !== subList[j]) {
+				match = false;
+				break;
 			}
 		}
+		if (match) return true;
 	}
 
-	// Merge the two lists: full matches first, then partial matches
-	const filteredCharacters = [...filteredCharactersFull, ...filteredCharactersPartial];
+	return false;
+}
 
-	// Limit to first 100 results
-	const limitedFilteredCharacters = filteredCharacters.slice(0, charLimit);
+function filterUnicodeData(query, unicodeData) {
+	const queryWords = query.toLowerCase().split(/\s+/); // Split query into words
+	const exactMatch = [], partialMatch1 = [], partialMatch2 = [], looseMatch = [];
 
-	displayCharacters(limitedFilteredCharacters); // Update display with limited results
+	unicodeData.forEach(character => {
+		const namesLower = character.allNames.toLowerCase();
+		const namesWords = namesLower.split(/\s+/);
+
+		// Exact matches for full query
+		if (containsSublist(namesWords, queryWords)) {
+			exactMatch.push(character);
+		}
+		// Match by name containing the query
+		else if (namesLower.includes(query)) {
+			partialMatch1.push(character);
+		}
+		// Match all query words (in any order)
+		else if (queryWords.every(word => namesWords.includes(word))) {
+			partialMatch2.push(character);
+		}
+		// Fallback: Match individual words in the name
+		else if (queryWords.every(word => namesLower.includes(word))) {
+			looseMatch.push(character);
+		}
+	});
+
+	// Return results with exact matches first, followed by partial matches
+	return [...exactMatch, ...partialMatch1, ...partialMatch2, ...looseMatch];
+}
+
+searchBar.addEventListener('input', () => {
+	const query = searchBar.value.toLowerCase().trim();
+	const filteredCharacters = filterUnicodeData(query, unicodeData).slice(0, charLimit);
+	displayCharacters(filteredCharacters);
 });
+
+// Load and display initial data
+const unicodeData = loadUnicodeData();
+displayCharacters(unicodeData.slice(0, charLimit));
