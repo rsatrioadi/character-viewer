@@ -1,4 +1,4 @@
-const { app, BrowserWindow, screen } = require('electron');
+const { app, BrowserWindow, screen, globalShortcut } = require('electron');
 const path = require('path');
 
 function createWindow() {
@@ -6,7 +6,7 @@ function createWindow() {
 	const windowWidth = Math.floor(screenWidth / 4);
 	const windowHeight = Math.floor(screenHeight / 2);
 
-	const win = new BrowserWindow({
+	win = new BrowserWindow({
 		width: windowWidth,
 		height: windowHeight,
 		autoHideMenuBar: true,
@@ -20,6 +20,30 @@ function createWindow() {
 	});
 	win.setMenuBarVisibility(false);
 	win.loadFile('index.html');
+
+	// Register the global shortcut
+	const ret = globalShortcut.register('Control+Alt+E', () => {
+		toggleWindowVisibility();
+	});
+
+	if (!ret) {
+		console.log('Registration failed');
+	}
+
+	// Intercept the close event to hide instead of closing
+	win.on('close', (event) => {
+		event.preventDefault(); // Prevent the window from closing
+		win.hide(); // Hide the window instead
+	});
+}
+
+function toggleWindowVisibility() {
+	if (win.isVisible()) {
+		win.hide(); // If it's already visible, hide it
+	} else {
+		win.show(); // Otherwise, show the window
+		win.focus(); // Focus on the window
+	}
 }
 
 app.whenReady().then(createWindow);
@@ -34,4 +58,9 @@ app.on('activate', () => {
 	if (BrowserWindow.getAllWindows().length === 0) {
 		createWindow();
 	}
+});
+
+// Unregister the shortcut when the app quits
+app.on('will-quit', () => {
+	globalShortcut.unregisterAll();
 });
