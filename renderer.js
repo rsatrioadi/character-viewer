@@ -26,7 +26,7 @@ function loadUnicodeData() {
 				const char = String.fromCodePoint(codePoint);
 
 				// Join all name fields for easy searching
-				const allNames = [name, ...fields.slice(3).filter(Boolean)].join(" / ");
+				const allNames = [char, name, codePointHex, ...fields.slice(3).filter(Boolean)].join(" / ");
 
 				unicodeData.push({
 					char,
@@ -207,6 +207,8 @@ function filterUnicodeData(query, unicodeData) {
 document.addEventListener('keydown', (event) => {
 	if (event.key === 'Escape') {
 		// Focus on the search bar and select the text inside the search bar
+		selectedCharIndex = -1;
+		clearHighlights();
 		searchBar.focus();
 		searchBar.select();
 	} else if (event.key === 'ArrowDown' && document.activeElement === searchBar) {

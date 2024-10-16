@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="48"
+   height="48"
+   viewBox="0 0 12.7 12.7"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   sodipodi:docname="icon.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="13.626537"
+     inkscape:cx="33.977819"
+     inkscape:cy="17.135682"
+     inkscape:window-width="1920"
+     inkscape:window-height="1111"
+     inkscape:window-x="1911"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       stroke="#0000ff"
+       stroke-opacity="0.75"
+       d="m 6.35,12.527497 c 2.706945,0 4.211771,0 5.194635,-0.982863 0.982862,-0.982863 0.982862,-2.487689 0.982862,-5.194634 0,-2.7069448 0,-4.2117724 -0.982863,-5.1946357 C 10.561771,0.17250319 9.056945,0.17250319 6.35,0.17250319 c -2.7069447,0 -4.2117723,0 -5.1946356,0.98286111 C 0.17250319,2.1382276 0.17250319,3.6430552 0.17250319,6.35 c 0,2.706945 0,4.211771 0.98286121,5.194634 0.9828633,0.982863 2.4876909,0.982863 5.1946356,0.982863 z"
+       id="path692"
+       style="fill:#f6f5f4;stroke:#c0bfbc;stroke-width:0.345006;stroke-dasharray:none;stroke-opacity:1" />
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:8.02386px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.429849"
+       x="3.7044711"
+       y="5.3842096"
+       id="text236"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.02386px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';text-align:center;text-anchor:middle;stroke-width:0.429849"
+         x="3.7044711"
+         y="5.3842096"
+         id="tspan288"><tspan
+           id="tspan664"
+           style="fill:#c01c28;stroke-width:0.429849">●</tspan><tspan
+           style="fill:#26a269;stroke-width:0.429849"
+           id="tspan400" /></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:8.02386px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.429849"
+       x="8.5665197"
+       y="6.3440948"
+       id="text630"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.02386px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';text-align:center;text-anchor:middle;fill:#26a269;stroke-width:0.429849"
+         x="8.5665197"
+         y="6.3440948"
+         id="tspan628">🡕</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:8.02386px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.429849"
+       x="3.5173304"
+       y="11.241527"
+       id="text644"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.02386px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';text-align:center;text-anchor:middle;stroke-width:0.429849"
+         x="3.5173304"
+         y="11.241527"
+         id="tspan642"><tspan
+           style="fill:#1a5fb4;stroke-width:0.429849"
+           id="tspan638">𝛌</tspan><tspan
+           style="fill:#9141ac;stroke-width:0.429849"
+           id="tspan640" /></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:8.02386px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.429849;fill:#c061cb"
+       x="9.0729685"
+       y="11.75477"
+       id="text658"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.02386px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';text-align:center;text-anchor:middle;stroke-width:0.429849;fill:#c061cb"
+         x="9.0729685"
+         y="11.75477"
+         id="tspan656"><tspan
+           style="fill:#c061cb;stroke-width:0.429849"
+           id="tspan654">#</tspan></tspan></text>
+  </g>
+</svg>
