@@ -1,6 +1,9 @@
 const { app, BrowserWindow, screen, globalShortcut } = require('electron');
 const path = require('path');
 
+let win;
+let isQuitting = false; 
+
 function createWindow() {
 	const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
 	const windowWidth = Math.floor(screenWidth / 4);
@@ -30,16 +33,33 @@ function createWindow() {
 		console.log('Registration failed');
 	}
 
+	win.webContents.on('before-input-event', (event, input) => {
+		if (input.key === 'q' && input.control) {
+			isQuitting = true;
+			app.quit(); // Quit the app when Ctrl+Q is pressed
+		}
+	});
+
 	// Intercept the close event to hide instead of closing
 	win.on('close', (event) => {
-		event.preventDefault(); // Prevent the window from closing
-		win.hide(); // Hide the window instead
+		if (!isQuitting) {
+			event.preventDefault(); // Prevent the window from closing
+			win.hide(); // Hide the window instead
+		}
+	});
+
+	win.on('closed', () => {
+		win = null;
 	});
 }
 
 function toggleWindowVisibility() {
 	if (win.isVisible()) {
-		win.hide(); // If it's already visible, hide it
+		if (win.isFocused()) {
+			win.hide(); // If it's already visible, hide it
+		} else {
+			win.focus();
+		}
 	} else {
 		win.show(); // Otherwise, show the window
 		win.focus(); // Focus on the window
