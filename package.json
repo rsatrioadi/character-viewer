@@ -7,9 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "publish": "electron-forge publish"
   },
-  "keywords": ["character viewer", "unicode"],
+  "keywords": [
+    "character viewer",
+    "unicode"
+  ],
   "author": "Satrio Adi Rukmono",
   "license": "AGPL-3.0-only",
   "devDependencies": {
@@ -20,6 +24,7 @@
     "@electron-forge/maker-zip": "^7.5.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.5.0",
     "@electron-forge/plugin-fuses": "^7.5.0",
+    "@electron-forge/publisher-github": "^7.5.0",
     "@electron/fuses": "^1.8.0",
     "electron": "^32.2.0"
   },
