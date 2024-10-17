@@ -1,15 +1,15 @@
 const { app, BrowserWindow, screen, globalShortcut } = require('electron');
 const path = require('path');
 
-let win;
-let isQuitting = false; 
+let mainWindow;
+let isQuitting = false;
 
 function createWindow() {
 	const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
 	const windowWidth = Math.floor(screenWidth / 4);
 	const windowHeight = Math.floor(screenHeight / 2);
 
-	win = new BrowserWindow({
+	mainWindow = new BrowserWindow({
 		width: windowWidth,
 		height: windowHeight,
 		autoHideMenuBar: true,
@@ -21,52 +21,65 @@ function createWindow() {
 			contextIsolation: false
 		}
 	});
-	win.setMenuBarVisibility(false);
-	win.loadFile('index.html');
 
-	// Register the global shortcut
-	const ret = globalShortcut.register('Control+Alt+E', () => {
-		toggleWindowVisibility();
+	mainWindow.setMenuBarVisibility(false);
+	mainWindow.loadFile('index.html');
+
+	// Show the window only when it’s ready to prevent a flicker
+	mainWindow.once('ready-to-show', () => {
+		mainWindow.show();
 	});
 
-	if (!ret) {
-		console.log('Registration failed');
-	}
+	// Intercept the close event to hide instead of closing
+	mainWindow.on('close', (event) => {
+		if (!isQuitting) {
+			event.preventDefault(); // Prevent the window from closing
+			mainWindow.hide(); // Hide the window instead
+		}
+	});
 
-	win.webContents.on('before-input-event', (event, input) => {
+	mainWindow.on('closed', () => {
+		mainWindow = null;
+	});
+
+	// Listen for Ctrl+Q inside the window to quit
+	mainWindow.webContents.on('before-input-event', (event, input) => {
 		if (input.key === 'q' && input.control) {
 			isQuitting = true;
 			app.quit(); // Quit the app when Ctrl+Q is pressed
 		}
 	});
-
-	// Intercept the close event to hide instead of closing
-	win.on('close', (event) => {
-		if (!isQuitting) {
-			event.preventDefault(); // Prevent the window from closing
-			win.hide(); // Hide the window instead
-		}
-	});
-
-	win.on('closed', () => {
-		win = null;
-	});
 }
 
 function toggleWindowVisibility() {
-	if (win.isVisible()) {
-		if (win.isFocused()) {
-			win.hide(); // If it's already visible, hide it
+	if (mainWindow.isVisible()) {
+		if (mainWindow.isFocused()) {
+			mainWindow.hide(); // If it's already visible and focused, hide it
 		} else {
-			win.focus();
+			mainWindow.focus();
 		}
 	} else {
-		win.show(); // Otherwise, show the window
-		win.focus(); // Focus on the window
+		mainWindow.show(); // Otherwise, show the window
+		mainWindow.focus();
 	}
 }
 
-app.whenReady().then(createWindow);
+// Global shortcut registration
+function registerShortcuts() {
+	globalShortcut.register('Control+Alt+E', () => {
+		toggleWindowVisibility();
+	});
+}
+
+// Unregister shortcuts when the app quits
+function unregisterShortcuts() {
+	globalShortcut.unregisterAll();
+}
+
+app.once('ready', () => {
+	createWindow();
+	registerShortcuts();
+});
 
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
@@ -75,12 +88,9 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-	if (BrowserWindow.getAllWindows().length === 0) {
+	if (!mainWindow) {
 		createWindow();
 	}
 });
 
-// Unregister the shortcut when the app quits
-app.on('will-quit', () => {
-	globalShortcut.unregisterAll();
-});
+app.on('will-quit', unregisterShortcuts);

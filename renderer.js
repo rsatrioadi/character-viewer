@@ -7,13 +7,28 @@ const tooltip = document.getElementById('tooltip');
 const charLimit = 1024;
 
 let selectedCharIndex = -1; // Tracks the current selected character index
+let unicodeData = [];
 
+// Load Unicode data asynchronously to avoid blocking the UI
 function loadUnicodeData() {
 	const filePath = path.join(__dirname, 'data', 'UnicodeData.txt');
-	const unicodeData = [];
 
-	const fileContent = fs.readFileSync(filePath, 'utf-8');
+	fs.readFile(filePath, 'utf-8', (err, fileContent) => {
+		if (err) {
+			console.error('Error loading Unicode data:', err);
+			return;
+		}
+
+		unicodeData = parseUnicodeData(fileContent);
+		displayCharacters(unicodeData.slice(0, charLimit)); // Display initial data
+		searchBar.focus(); // Focus on the search bar initially
+	});
+}
+
+// Parse the Unicode data file
+function parseUnicodeData(fileContent) {
 	const lines = fileContent.split('\n');
+	const parsedData = [];
 
 	lines.forEach(line => {
 		const fields = line.split(';');
@@ -28,7 +43,7 @@ function loadUnicodeData() {
 				// Join all name fields for easy searching
 				const allNames = [char, name, codePointHex, ...fields.slice(3).filter(Boolean)].join(" / ");
 
-				unicodeData.push({
+				parsedData.push({
 					char,
 					name,
 					code: `U+${codePointHex}`,
@@ -38,11 +53,14 @@ function loadUnicodeData() {
 		}
 	});
 
-	return unicodeData;
+	return parsedData;
 }
 
+// Efficiently display characters in the grid
 function displayCharacters(characters) {
+	const fragment = document.createDocumentFragment(); // Use a fragment to batch DOM updates
 	characterGrid.innerHTML = ''; // Clear previous results
+
 	characters.forEach(character => {
 		const charDiv = document.createElement('div');
 		charDiv.classList.add('character');
@@ -55,104 +73,96 @@ function displayCharacters(characters) {
 		charDiv.addEventListener('mouseleave', hideTooltip);
 		charDiv.addEventListener('click', () => copyToClipboard(character.char));
 
-		characterGrid.appendChild(charDiv);
+		fragment.appendChild(charDiv);
 	});
+
+	characterGrid.appendChild(fragment); // Append all elements at once
 }
 
+// Highlights a character in the grid
+function highlightCharacter(index) {
+	const characters = Array.from(characterGrid.children);
+
+	if (index >= 0 && index < characters.length) {
+		clearHighlights(); // Clear previous highlights
+
+		const target = characters[index];
+		target.classList.add('selected');
+		target.scrollIntoView({ block: "nearest" });
+
+		const character = unicodeData.find(datum => datum.char === target.textContent);
+		showTooltip({ target }, character); // Show tooltip for the selected character
+	}
+}
+
+// Clears all highlights and hides the tooltip
 function clearHighlights() {
 	const characters = Array.from(characterGrid.children);
 	characters.forEach(charDiv => charDiv.classList.remove('selected'));
 	hideTooltip();
 }
 
-function highlightCharacter(index) {
-	const characters = Array.from(characterGrid.children);
-
-	if (index >= 0 && index < characters.length) {
-		// Add 'selected' class to the new character
-		const target = characters[index];
-		target.classList.add('selected');
-		target.scrollIntoView({ block: "nearest" }); // Auto-scroll to keep it in view
-		const character = unicodeData.find( datum => datum.char === target.textContent );
-		showTooltip({ target }, character);
-	}
-}
-
+// Grid navigation logic
 function navigateGrid(key) {
 	const characters = Array.from(characterGrid.children);
 	const computedStyle = getComputedStyle(characterGrid);
 	const gap = parseFloat(computedStyle.gap);
-	const numCols = Math.floor((characterGrid.clientWidth+gap) / (characters[0].offsetWidth+gap)); // Columns in grid
+	const numCols = Math.floor((characterGrid.clientWidth + gap) / (characters[0].offsetWidth + gap)); // Columns in grid
 
-	if (key === 'ArrowDown') {
-		selectedCharIndex += numCols; // Move down one row
-	} else if (key === 'ArrowUp') {
-		selectedCharIndex -= numCols; // Move up one row
-	} else if (key === 'ArrowRight') {
-		selectedCharIndex += 1; // Move right one character
-	} else if (key === 'ArrowLeft') {
-		selectedCharIndex -= 1; // Move left one character
+	switch (key) {
+		case 'ArrowDown': selectedCharIndex += numCols; break;
+		case 'ArrowUp': selectedCharIndex -= numCols; break;
+		case 'ArrowRight': selectedCharIndex += 1; break;
+		case 'ArrowLeft': selectedCharIndex -= 1; break;
 	}
 
-	clearHighlights();
-	// Prevent out-of-bounds navigation
-	if (selectedCharIndex < 0) {
-		selectedCharIndex = -1;
+	selectedCharIndex = Math.max(-1, Math.min(selectedCharIndex, characters.length - 1));
+
+	if (selectedCharIndex === -1) {
 		searchBar.focus();
 		searchBar.select();
 	} else {
-		if (selectedCharIndex >= characters.length) selectedCharIndex = characters.length - 1;
-		highlightCharacter(selectedCharIndex); // Highlight the new character
+		highlightCharacter(selectedCharIndex);
 	}
 }
 
-function copySelectedCharacter() {
-	if (selectedCharIndex >= 0) {
-		const characters = Array.from(characterGrid.children);
-		const char = characters[selectedCharIndex].textContent;
-		copyToClipboard(char);
-	}
+// Copy the selected character to the clipboard
+function copyToClipboard(char) {
+	navigator.clipboard.writeText(char).then(() => {
+		// Optionally show feedback to the user
+		console.log(`Copied to clipboard: ${char}`);
+	}).catch(err => {
+		console.error('Failed to copy text: ', err);
+	});
 }
 
+// Tooltip logic
 function showTooltip(event, character) {
 	tooltip.textContent = `${character.name} (${character.code})`;
 	tooltip.style.visibility = 'visible';
 
-	// Get the tooltip dimensions
 	const tooltipRect = tooltip.getBoundingClientRect();
 	const pageWidth = window.innerWidth;
 	const pageHeight = window.innerHeight;
-
-	// Get the dimensions and position of the grid cell (the target element)
 	const targetRect = event.target.getBoundingClientRect();
 
-	// Set default tooltip position right below the grid cell
 	let tooltipX = targetRect.left;
 	let tooltipY = targetRect.bottom;
 
-	// If the tooltip goes beyond the right edge of the page, adjust it to the left
 	if (tooltipX + tooltipRect.width > pageWidth) {
 		tooltipX = pageWidth - tooltipRect.width - 5;
 	}
 
-	// If the tooltip goes beyond the bottom edge of the page, adjust it to be above the grid cell
 	if (tooltipY + tooltipRect.height > pageHeight) {
 		tooltipY = targetRect.top - tooltipRect.height;
 	}
 
-	// Apply the calculated position
 	tooltip.style.left = `${tooltipX}px`;
 	tooltip.style.top = `${tooltipY}px`;
 }
 
 function hideTooltip() {
 	tooltip.style.visibility = 'hidden';
-}
-
-function copyToClipboard(char) {
-	navigator.clipboard.writeText(char).then(() => {
-		// TODO: UI feedback?
-	});
 }
 
 function containsSublist(mainList, subList) {
@@ -172,13 +182,14 @@ function containsSublist(mainList, subList) {
 	return false;
 }
 
+// Filters the Unicode data based on the search query
 function filterUnicodeData(query, unicodeData) {
 	const queryWords = query.toLowerCase().split(/\s+/); // Split query into words
 	const exactMatch = [], partialMatch1 = [], partialMatch2 = [], looseMatch = [];
+	
+	let totalMatches = 0;
 
-	let totalMatches = 0, i = 0;
-
-	while (i < unicodeData.length && totalMatches < charLimit) {
+	for (let i = 0; i < unicodeData.length && totalMatches < charLimit; i++) {
 		const character = unicodeData[i];
 		const namesLower = character.allNames.toLowerCase();
 		const namesWords = namesLower.split(/\s+/);
@@ -197,7 +208,6 @@ function filterUnicodeData(query, unicodeData) {
 		}
 
 		totalMatches = exactMatch.length + partialMatch1.length + partialMatch2.length + looseMatch.length;
-		i++;
 	}
 
 	// Return results with exact matches first, followed by partial matches
@@ -206,25 +216,20 @@ function filterUnicodeData(query, unicodeData) {
 
 document.addEventListener('keydown', (event) => {
 	if (event.key === 'Escape') {
-		// Focus on the search bar and select the text inside the search bar
 		selectedCharIndex = -1;
 		clearHighlights();
 		searchBar.focus();
 		searchBar.select();
 	} else if (event.key === 'ArrowDown' && document.activeElement === searchBar) {
-		// Move focus from search bar to grid and select the first character
 		selectedCharIndex = 0;
 		highlightCharacter(selectedCharIndex);
 		searchBar.blur();
 	} else if (['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(event.key) && document.activeElement !== searchBar) {
-		// Handle grid navigation with arrow keys
 		navigateGrid(event.key);
 	} else if (event.key === 'Enter' && selectedCharIndex >= 0) {
-		// Copy selected character when Enter is pressed
 		copySelectedCharacter();
 	}
 });
-
 
 searchBar.addEventListener('input', () => {
 	const query = searchBar.value.toLowerCase().trim();
@@ -232,7 +237,5 @@ searchBar.addEventListener('input', () => {
 	displayCharacters(filteredCharacters);
 });
 
-// Load and display initial data
-const unicodeData = loadUnicodeData();
-displayCharacters(unicodeData.slice(0, charLimit));
-searchBar.focus();
+// Load Unicode data when the app starts
+loadUnicodeData();
