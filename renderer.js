@@ -119,6 +119,7 @@ function navigateGrid(key) {
 	selectedCharIndex = Math.max(-1, Math.min(selectedCharIndex, characters.length - 1));
 
 	if (selectedCharIndex === -1) {
+		clearHighlights();
 		searchBar.focus();
 		searchBar.select();
 	} else {

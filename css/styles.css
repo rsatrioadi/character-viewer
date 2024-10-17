@@ -61,7 +61,7 @@ body {
 	background-color: hsl(30, 100%, 40%);
 	color: white;
 	border-radius: 4px;
-	font-size: 12px;
+	font-size: 10px;
 	z-index: 1000;
 	visibility: hidden;
 }
