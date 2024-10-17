@@ -4,7 +4,7 @@ A Unicode character viewer to help you find the character you need and easily co
 
 ## Usage
 
-Once the application is running, you can toggle the visibility of the Character Viewer by pressing **Ctrl + Alt + E**. 
+Once the application is running, you can toggle the visibility of the Character Viewer by pressing **Ctrl + Alt + E**. Quit the application by pressing **Ctrl + Q** when the application window is focused.
 
 Character Viewer is designed for quick, search-based access to Unicode characters. It does not display an exhaustive list of all characters, nor does it support browsing by category.
 
