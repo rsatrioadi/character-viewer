@@ -8,7 +8,7 @@ Once the application is running, you can toggle the visibility of the Character 
 
 Character Viewer is designed for quick, search-based access to Unicode characters. It does not display an exhaustive list of all characters, nor does it support browsing by category.
 
-You can click on a character directly or navigate through the character grid using the arrow keys. To copy the selected character to the clipboard, simply press **Enter**.
+You can navigate through the character grid using the mouse or the arrow keys. To copy the selected character to the clipboard, simply click on it or press **Enter**.
 
 ## Why?
 
