@@ -9,7 +9,11 @@ if (!app.requestSingleInstanceLock()) {
 	app.quit(); // Quit the second instance
 } else {
 	function createWindow() {
-		const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
+		// Get the display nearest to the cursor
+		const cursorPosition = screen.getCursorScreenPoint();
+		const display = screen.getDisplayNearestPoint(cursorPosition);
+		const { width: screenWidth, height: screenHeight } = display.workAreaSize;
+
 		const windowWidth = Math.floor(screenWidth / 4);
 		const windowHeight = Math.floor(screenHeight / 2);
 
@@ -17,9 +21,9 @@ if (!app.requestSingleInstanceLock()) {
 			width: windowWidth,
 			height: windowHeight,
 			autoHideMenuBar: true,
-			x: screenWidth - windowWidth - 10,
-			y: screenHeight - windowHeight - 10,
-			icon: path.join(__dirname, 'assets', 'icon.ico'),
+			x: display.workArea.x + screenWidth - windowWidth - 5, // Place near right edge of the active display
+			y: display.workArea.y + screenHeight - windowHeight - 5, // Place near bottom of the active display
+        	icon: path.join(__dirname, 'assets', 'icon.ico'),
 			webPreferences: {
 				nodeIntegration: true,
 				contextIsolation: false
@@ -83,6 +87,7 @@ if (!app.requestSingleInstanceLock()) {
 	// Handle the second instance (focus the existing window)
 	app.on('second-instance', (event, commandLine, workingDirectory) => {
 		if (mainWindow) {
+			if (!mainWindow.isVisible()) mainWindow.show();
 			if (mainWindow.isMinimized()) mainWindow.restore();
 			mainWindow.focus();
 		}
