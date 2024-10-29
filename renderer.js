@@ -107,7 +107,7 @@ function navigateGrid(key) {
 	const characters = Array.from(characterGrid.children);
 	const computedStyle = getComputedStyle(characterGrid);
 	const gap = parseFloat(computedStyle.gap);
-	const numCols = Math.floor((characterGrid.clientWidth + gap) / (characters[0].offsetWidth + gap)); // Columns in grid
+	const numCols = Math.floor((characterGrid.clientWidth + gap) / (characters[0].clientWidth + gap)); // Columns in grid
 
 	switch (key) {
 		case 'ArrowDown': selectedCharIndex += numCols; break;
@@ -214,6 +214,11 @@ function filterUnicodeData(query, unicodeData) {
 	// Return results with exact matches first, followed by partial matches
 	return [...exactMatch, ...partialMatch1, ...partialMatch2, ...looseMatch];
 }
+
+window.addEventListener('focus', () => {
+	searchBar.focus();
+	searchBar.select();
+});
 
 document.addEventListener('keydown', (event) => {
 	if (event.key === 'Escape') {

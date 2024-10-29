@@ -7,7 +7,8 @@
 
 body {
 	font-family: 'Noto Sans', sans-serif;
-	background-color: hsl(30, 20%, 97%);
+	background-color: #f3f3f3;
+	/* background-color: hsl(30, 20%, 97%); */
 }
 
 #app {
@@ -20,9 +21,9 @@ body {
 	padding: 7px;
 	font-size: 12px;
 	margin-bottom: 5px;
-	background-color: hsl(30, 20%, 99%);
-	border: 1px solid hsl(30, 20%, 90%);
-	border-top: 2px solid hsl(30, 20%, 90%);
+	background-color: #fafafa;
+	border: 1px solid hsl(30, 0%, 90%);
+	border-top: 2px solid hsl(30, 0%, 90%);
 	border-radius: 4px;
 }
 
@@ -37,7 +38,7 @@ body {
 #character-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(2em, 1fr));
-	gap: 5px;
+	gap: 2px;
 	/* padding: 5px; */
 	max-height: calc(100vh - 57px);
 	overflow-y: auto;
@@ -48,9 +49,9 @@ body {
 	cursor: pointer;
 	text-align: center;
 	padding: 5px;
-	background-color: hsl(30, 20%, 99%);
-	border: 1px solid hsl(30, 20%, 90%);
-	border-bottom: 2px solid hsl(30, 20%, 90%);
+	background-color: #fafafa;
+	border: 1px solid hsl(30, 0%, 90%);
+	border-bottom: 2px solid hsl(30, 0%, 90%);
 	border-radius: 4px;
 }
 
