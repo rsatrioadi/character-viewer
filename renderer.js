@@ -1,3 +1,4 @@
+const { ipcRenderer } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
@@ -132,6 +133,7 @@ function copyToClipboard(char) {
 	navigator.clipboard.writeText(char).then(() => {
 		// Optionally show feedback to the user
 		console.log(`Copied to clipboard: ${char}`);
+		ipcRenderer.send('hide-window');
 	}).catch(err => {
 		console.error('Failed to copy text: ', err);
 	});

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, screen, globalShortcut } = require('electron');
+const { app, BrowserWindow, screen, globalShortcut, ipcMain } = require('electron');
 const path = require('path');
 
 let mainWindow;
@@ -55,6 +55,12 @@ if (!app.requestSingleInstanceLock()) {
 			if (input.key === 'q' && input.control) {
 				isQuitting = true;
 				app.quit(); // Quit the app when Ctrl+Q is pressed
+			}
+		});
+
+		ipcMain.on('hide-window', () => {
+			if (mainWindow.isVisible()) {
+				mainWindow.hide(); // Hide the window
 			}
 		});
 	}
