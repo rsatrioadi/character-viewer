@@ -235,7 +235,8 @@ document.addEventListener('keydown', (event) => {
 	} else if (['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(event.key) && document.activeElement !== searchBar) {
 		navigateGrid(event.key);
 	} else if (event.key === 'Enter' && selectedCharIndex >= 0) {
-		copySelectedCharacter();
+		const characters = Array.from(characterGrid.children);
+		copyToClipboard(characters[selectedCharIndex].textContent);
 	}
 });
 
